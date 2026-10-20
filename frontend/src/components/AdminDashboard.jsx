@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 
 export default function AdminDashboard() {
   const [books, setBooks] = useState([]);
-  const [form, setForm] = useState({ title: '', author: '', isbn: '', category: '', total_copies: 1, location_rack: '', published_year: 2026 });
+  const [form, setForm] = useState({ title: '', author: '', isbn: '', category: '', total_copies: 1, shelf_location: '', published_year: 2026 });
 
   const fetchInventory = async () => {
     const res = await fetch('/api/books', {
@@ -15,22 +15,39 @@ export default function AdminDashboard() {
   useEffect(() => { fetchInventory(); }, []);
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
+  
+  // 1. Extract the active JWT token saved during login
+  const token = localStorage.getItem('token'); 
+
+  try {
+    // 2. Dispatch the network payload request
     const res = await fetch('/api/books', {
       method: 'POST',
-      headers: {
+      headers: { 
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
+        // Attach the authorization token right here
+        'Authorization': `Bearer ${token}` 
       },
-      body: JSON.stringify(form)
+      body: JSON.stringify(form) // Matches your dynamic input text hooks setup
     });
-    if (res.ok) {
-      fetchInventory();
-      setForm({ title: '', author: '', isbn: '', category: '', total_copies: 1, location_rack: '', published_year: 2026 });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      alert(data.error || 'Error adding book. Ensure user is logged in as ADMIN.');
     } else {
-      alert("Error adding book. Ensure user is logged in as ADMIN.");
+      alert('Success! New book has been securely added to the PostgreSQL catalog database.');
+      // Clear your form fields state variables here...
+      setForm({ title: '', author: '', isbn: '', category: '', total_copies: 1, shelf_location: '' });
+      fetchInventory(); // Triggers real-time re-fetch to display the new entry in the list
     }
-  };
+  } catch (err) {
+    console.error('Network transaction execution error:', err);
+    alert('Failed to connect to the backend server application driver.');
+  }
+};
+
 
   const handleDelete = async (id) => {
     if(window.confirm("Confirm removal?")) {
@@ -51,7 +68,7 @@ export default function AdminDashboard() {
         <input type="text" placeholder="ISBN (Unique)" value={form.isbn} onChange={e => setForm({...form, isbn: e.target.value})} className="border p-2 rounded text-sm" required />
         <input type="text" placeholder="Category" value={form.category} onChange={e => setForm({...form, category: e.target.value})} className="border p-2 rounded text-sm" />
         <input type="number" placeholder="Total Stock" value={form.total_copies} onChange={e => setForm({...form, total_copies: parseInt(e.target.value) || 0})} className="border p-2 rounded text-sm" min="1" required />
-        <input type="text" placeholder="Rack Placement" value={form.location_rack} onChange={e => setForm({...form, location_rack: e.target.value})} className="border p-2 rounded text-sm" />
+        <input type="text" placeholder="Shelf Location" value={form.shelf_location} onChange={e => setForm({...form, shelf_location: e.target.value})} className="border p-2 rounded text-sm" />
         <button type="submit" className="bg-blue-600 text-white p-2 rounded font-medium hover:bg-blue-700 transition md:col-span-3">Add Asset to Catalog</button>
       </form>
       <div className="bg-white rounded shadow-sm overflow-x-auto">
@@ -71,7 +88,7 @@ export default function AdminDashboard() {
                 <td className="p-3 font-medium">{b.title} <span className="text-xs text-gray-400 block">by {b.author}</span></td>
                 <td className="p-3">{b.isbn}</td>
                 <td className="p-3">{b.available_copies} / {b.total_copies}</td>
-                <td className="p-3">{b.location_rack || 'Main Hall'}</td>
+               <td className="p-3">{b.shelf_location || 'N/A'}</td>
                 <td className="p-3"><button onClick={() => handleDelete(b.id)} className="text-red-500 font-semibold hover:underline">Remove</button></td>
               </tr>
             ))}

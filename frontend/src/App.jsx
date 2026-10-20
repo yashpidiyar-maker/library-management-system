@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import AdminDashboard from './components/AdminDashboard';
 import UserSearch from './components/UserSearch';
-import IntegratedDashboard from'./components/IntegratedDashboard';
 
 export default function App() {
   const [authForm, setAuthForm] = useState({ username: '', email: '', password: '', role: 'USER' });
@@ -67,7 +66,7 @@ export default function App() {
               <span>Logged in as: <strong>{user.username}</strong> ({user.role})</span>
               <button onClick={() => { localStorage.removeItem('token'); setUser(null); setTab('search'); }} className="text-red-600 underline font-semibold">Sign Out</button>
             </div>
-            {tab === 'admin' ? <IntegratedDashboard userRole={user.role} /> : <IntegratedDashboard userRole={user.role} />}
+            {tab === 'admin' ? <AdminDashboard /> : <UserSearch />}
           </div>
         )}
       </main>
