@@ -1,0 +1,32 @@
+### Admin Login
+POST http://localhost:5000/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "yashpidiyar@gmail.com",
+  "password": "yash123"
+}
+### Book Reservation Test
+POST http://localhost:5000/api/reservations
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzk0NDg1OTc4LCJleHAiOjE3OTQ0OTMxNzh9._LrFoICbtHJ2ffzjeC8lc3bdPNZ88OGqb99fEUieRwg
+
+{
+  "book_id": 2
+}
+
+### Issue Book
+POST http://localhost:5000/api/transactions/issue
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzk0MzIyNjQ5LCJleHAiOjE3OTQzMjk4NDl9.SqncEcX86X1vFLUEnsgEg8c6s8e3ceSYWTQt5ObGJeE
+
+{
+  "user_id": 1,
+  "book_id": 2
+}
+
+### Return Book
+POST http://localhost:5000/api/transactions/7/return
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzk0MzIyNjQ5LCJleHAiOjE3OTQzMjk4NDl9.SqncEcX86X1vFLUEnsgEg8c6s8e3ceSYWTQt5ObGJeE
+
+Content-Type: application/json
